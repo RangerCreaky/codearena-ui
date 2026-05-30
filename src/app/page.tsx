@@ -1,64 +1,93 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { motion } from "motion/react";
+import { Navbar } from "@/components/layout/navbar";
+import { MatrixRain } from "@/components/landing/matrix-rain";
+import { CrossedSwords } from "@/components/landing/crossed-swords";
+import { CodeBattle } from "@/components/landing/code-battle";
+import { useTheme } from "@/components/providers/theme-provider";
+
+export default function LandingPage() {
+  const { theme } = useTheme();
+  const isNoir = theme === "spider-noir";
+  
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="relative min-h-screen bg-background overflow-hidden">
+      {/* Matrix rain background */}
+      <MatrixRain />
+
+      {/* Navbar */}
+      <Navbar />
+
+      {/* Main content — single centered composition */}
+      <main className="relative z-10 flex items-center justify-center min-h-screen px-4">
+        {/* The unified battle scene: editors + branding layered */}
+        <div className="relative flex items-center justify-center w-full max-w-[1200px]">
+
+          {/* Layer 1: The two code editors side by side */}
+          <CodeBattle />
+
+          {/* Layer 2: CodeWarz branding overlaid in the center */}
+          <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+            <motion.div
+              className="flex flex-col items-center"
+              initial={{ opacity: 0, scale: 0.7 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.9, ease: "easeOut", delay: 0.2 }}
+            >
+              {/* Swords behind text */}
+              <div className="relative flex items-center justify-center pointer-events-auto">
+                <div className="absolute">
+                  <CrossedSwords />
+                </div>
+
+                {/* CodeWarz title */}
+                <div className="relative z-10 flex flex-col items-center">
+                  <h1
+                    className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-wider flex items-center justify-center"
+                    style={{ fontFamily: "var(--font-retro)" }}
+                  >
+                    <span className="text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.4)] [text-shadow:_0_0_40px_rgba(0,0,0,1),_0_0_80px_rgba(0,0,0,1)] relative">
+                      {isNoir && (
+                        <span className="absolute -top-6 -left-2 sm:-top-8 sm:-left-3 text-2xl sm:text-4xl transform -rotate-12" title="Noir Mode">
+                          🎩
+                        </span>
+                      )}
+                      Code
+                    </span>
+                    <span 
+                      className={`drop-shadow-[0_0_30px_rgba(233,171,43,0.6)] [text-shadow:_0_0_40px_rgba(0,0,0,1),_0_0_80px_rgba(0,0,0,1)] ${isNoir ? "text-white" : "text-[#e9ab2b]"}`}
+                      style={isNoir ? { filter: "drop-shadow(0 0 20px rgba(255,255,255,0.5))" } : {}}
+                    >
+                      Warz
+                    </span>
+                  </h1>
+
+                  {/* Subtitle */}
+                  <motion.p
+                    className="text-center text-[9px] sm:text-[11px] md:text-sm font-bold text-white/60 max-w-md mt-3 sm:mt-4 tracking-wide leading-relaxed [text-shadow:_0_0_20px_rgba(0,0,0,1),_0_0_40px_rgba(0,0,0,1)]"
+                    style={{ fontFamily: "var(--font-retro)" }}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.8 }}
+                  >
+                    <span className={isNoir ? "text-white/80" : "text-[#e9ab2b]/80"}>Sharpen your syntax</span>
+                    <span className="mx-1 sm:mx-2">—</span>
+                    <span>The battle of codes is about to begin</span>
+                  </motion.p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Subtle bottom glow */}
+        <div
+          className="fixed bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] rounded-full pointer-events-none z-0"
+          style={{
+            background: "radial-gradient(ellipse, rgba(233,171,43,0.06) 0%, transparent 70%)",
+          }}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
       </main>
     </div>
   );

@@ -1,0 +1,1151 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+<style>
+    :root {
+        --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+
+        --color-background-primary: #f8fafc;
+        --color-background-secondary: #ffffff;
+        --color-background-tertiary: #f1f5f9;
+
+        --color-border-primary: #cbd5e1;
+        --color-border-secondary: #e2e8f0;
+        --color-border-tertiary: #f1f5f9;
+
+        --color-text-primary: #0f172a;
+        --color-text-secondary: #475569;
+        --color-text-tertiary: #64748b;
+
+        --color-accent: #6366f1;
+        --color-accent-hover: #4f46e5;
+        --color-accent-subtle: rgba(99, 102, 241, 0.08);
+
+        --color-method-post-bg: #e0e7ff;
+        --color-method-post-text: #3730a3;
+        --color-method-get-bg: #dcfce7;
+        --color-method-get-text: #166534;
+
+        --color-req-bg: #fee2e2;
+        --color-req-text: #991b1b;
+        --color-opt-bg: #f0fdf4;
+        --color-opt-text: #166534;
+
+        --border-radius-sm: 6px;
+        --border-radius-md: 10px;
+        --border-radius-lg: 16px;
+
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.02);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --color-background-primary: #0b0f19;
+            --color-background-secondary: #111827;
+            --color-background-tertiary: #1f2937;
+
+            --color-border-primary: #374151;
+            --color-border-secondary: #1f2937;
+            --color-border-tertiary: #1f2937;
+
+            --color-text-primary: #f9fafb;
+            --color-text-secondary: #d1d5db;
+            --color-text-tertiary: #9ca3af;
+
+            --color-accent: #818cf8;
+            --color-accent-hover: #6366f1;
+            --color-accent-subtle: rgba(99, 102, 241, 0.15);
+
+            --color-method-post-bg: rgba(99, 102, 241, 0.2);
+            --color-method-post-text: #a5b4fc;
+            --color-method-get-bg: rgba(34, 197, 94, 0.2);
+            --color-method-get-text: #86efac;
+
+            --color-req-bg: rgba(239, 68, 68, 0.2);
+            --color-req-text: #fca5a5;
+            --color-opt-bg: rgba(34, 197, 94, 0.2);
+            --color-opt-text: #86efac;
+        }
+    }
+
+    .root {
+        font-family: var(--font-sans);
+        padding: 32px 24px;
+        background: var(--color-background-primary);
+        color: var(--color-text-primary);
+        max-width: 1000px;
+        margin: 0 auto;
+        min-height: 100vh;
+        border-radius: var(--border-radius-lg);
+        box-sizing: border-box;
+    }
+
+    .tabs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 28px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--color-border-secondary);
+    }
+
+    .tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: var(--border-radius-md);
+        border: 1px solid var(--color-border-secondary);
+        background: var(--color-background-secondary);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        color: var(--color-text-secondary);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .tab:hover {
+        background: var(--color-background-tertiary);
+        color: var(--color-text-primary);
+        border-color: var(--color-border-primary);
+        transform: translateY(-1px);
+    }
+
+    .tab.active {
+        background: var(--color-background-primary);
+        border-color: var(--color-accent);
+        color: var(--color-accent);
+        font-weight: 600;
+        box-shadow: 0 0 0 2px var(--color-accent-subtle);
+    }
+
+    .panel {
+        display: none;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .panel.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .method-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding: 12px 16px;
+        background: var(--color-background-secondary);
+        border-radius: var(--border-radius-md);
+        border: 1px solid var(--color-border-secondary);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .method {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: var(--border-radius-sm);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .m-post {
+        background: var(--color-method-post-bg);
+        color: var(--color-method-post-text);
+    }
+
+    .m-get {
+        background: var(--color-method-get-bg);
+        color: var(--color-method-get-text);
+    }
+
+    .path {
+        font-family: var(--font-mono);
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--color-text-primary);
+    }
+
+    .auth-pill {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 20px;
+        border: 1px solid var(--color-border-secondary);
+        color: var(--color-text-tertiary);
+        background: var(--color-background-secondary);
+        margin-left: auto;
+    }
+
+    .purpose {
+        font-size: 14px;
+        color: var(--color-text-secondary);
+        line-height: 1.7;
+        margin: 0 0 24px;
+        padding: 16px 20px;
+        background: var(--color-background-secondary);
+        border-left: 4px solid var(--color-accent);
+        border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .section-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--color-text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin: 28px 0 12px;
+    }
+
+    .field-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 13px;
+        margin-bottom: 24px;
+        border: 1px solid var(--color-border-secondary);
+        border-radius: var(--border-radius-md);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .field-table th {
+        text-align: left;
+        padding: 12px 16px;
+        font-weight: 600;
+        background: var(--color-background-tertiary);
+        border-bottom: 1px solid var(--color-border-secondary);
+        color: var(--color-text-tertiary);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+    .field-table td {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--color-border-tertiary);
+        background: var(--color-background-secondary);
+        vertical-align: top;
+        line-height: 1.6;
+        color: var(--color-text-secondary);
+    }
+
+    .field-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .fname {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--color-text-primary);
+    }
+
+    .ftype {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--color-text-tertiary);
+    }
+
+    .fdesc {
+        font-size: 13px;
+        color: var(--color-text-secondary);
+    }
+
+    .req {
+        font-size: 10px;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: var(--color-req-bg);
+        color: var(--color-req-text);
+        margin-left: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        vertical-align: middle;
+    }
+
+    .opt {
+        font-size: 10px;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: var(--color-opt-bg);
+        color: var(--color-opt-text);
+        margin-left: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        vertical-align: middle;
+    }
+
+    .logic-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 24px;
+    }
+
+    .logic-list li {
+        display: flex;
+        gap: 16px;
+        padding: 12px 16px;
+        background: var(--color-background-secondary);
+        border-radius: var(--border-radius-md);
+        margin-bottom: 8px;
+        border: 1px solid var(--color-border-tertiary);
+        font-size: 14px;
+        color: var(--color-text-secondary);
+        line-height: 1.6;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.2s ease;
+    }
+
+    .logic-list li:hover {
+        border-color: var(--color-border-primary);
+        transform: translateX(2px);
+    }
+
+    .step-num {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--color-background-tertiary);
+        border: 1px solid var(--color-border-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--color-text-tertiary);
+        flex-shrink: 0;
+        margin-top: 2px;
+        transition: all 0.2s ease;
+    }
+
+    .logic-list li:hover .step-num {
+        background: var(--color-accent);
+        color: #ffffff;
+        border-color: var(--color-accent);
+    }
+
+    code {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        background: var(--color-background-tertiary);
+        padding: 2px 6px;
+        border-radius: 4px;
+        border: 1px solid var(--color-border-secondary);
+        color: var(--color-text-primary);
+    }
+
+    .code {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        background: var(--color-background-tertiary);
+        border: 1px solid var(--color-border-secondary);
+        border-radius: var(--border-radius-md);
+        padding: 16px 20px;
+        line-height: 1.6;
+        color: var(--color-text-primary);
+        white-space: pre;
+        overflow-x: auto;
+        margin: 0 0 16px;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+    }
+
+    /* Syntax Highlighting */
+    .c-key {
+        color: #6366f1;
+        font-weight: 600;
+    }
+
+    .c-str {
+        color: #0d9488;
+    }
+
+    .c-num {
+        color: #f59e0b;
+    }
+
+    .c-bool {
+        color: #ec4899;
+        font-weight: 600;
+    }
+
+    .c-hdr {
+        color: #0284c7;
+        font-weight: 600;
+    }
+
+    .c-comment {
+        color: #64748b;
+        font-style: italic;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .c-key {
+            color: #818cf8;
+        }
+
+        .c-str {
+            color: #2dd4bf;
+        }
+
+        .c-num {
+            color: #fbbf24;
+        }
+
+        .c-bool {
+            color: #f472b6;
+        }
+
+        .c-hdr {
+            color: #38bdf8;
+        }
+
+        .c-comment {
+            color: #64748b;
+        }
+    }
+
+    .error-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border: 1px solid var(--color-border-tertiary);
+        font-size: 13px;
+        background: var(--color-background-secondary);
+        border-radius: var(--border-radius-md);
+        margin-bottom: 8px;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.15s ease;
+    }
+
+    .error-row:hover {
+        background: var(--color-background-tertiary);
+        border-color: var(--color-border-primary);
+    }
+
+    .ecode {
+        font-family: var(--font-mono);
+        font-weight: 600;
+        color: var(--color-req-text);
+        background: var(--color-req-bg);
+        padding: 3px 8px;
+        border-radius: var(--border-radius-sm);
+        font-size: 12px;
+        min-width: 40px;
+        text-align: center;
+    }
+
+    .edesc {
+        color: var(--color-text-secondary);
+        line-height: 1.5;
+    }
+
+    .divider {
+        border: none;
+        border-top: 1px solid var(--color-border-secondary);
+        margin: 36px 0;
+    }
+</style>
+
+<div class="root">
+    <div class="tabs">
+        <button class="tab active" onclick="sw('google',this)">POST /auth/google</button>
+        <button class="tab" onclick="sw('refresh',this)">POST /auth/refresh</button>
+        <button class="tab" onclick="sw('logout',this)">POST /auth/logout</button>
+        <button class="tab" onclick="sw('me',this)">GET /auth/me</button>
+        <button class="tab" onclick="sw('check',this)">GET /username-check</button>
+        <button class="tab" onclick="sw('username',this)">POST /username</button>
+    </div>
+
+    <!-- POST /auth/google -->
+    <div class="panel active" id="p-google">
+        <div class="method-bar">
+            <span class="method m-post">POST</span>
+            <span class="path">/auth/google</span>
+            <span class="auth-pill">public — no JWT needed</span>
+        </div>
+        <p class="purpose">The single entry point for all Google logins. NextAuth calls this after completing the OAuth
+            dance with Google. FastAPI receives the id_token, verifies it with Google's public keys, extracts the user
+            identity, and decides whether this is a new user or a returning one. Returns an access token and a flag
+            telling the frontend where to redirect.</p>
+
+        <p class="section-label">Request headers</p>
+        <table class="field-table">
+            <tr>
+                <th>Header</th>
+                <th>Value</th>
+                <th>Notes</th>
+            </tr>
+            <tr>
+                <td><span class="fname">Content-Type</span></td>
+                <td><span class="ftype">application/json</span></td>
+                <td><span class="fdesc">Always required for POST with JSON body</span></td>
+            </tr>
+        </table>
+
+        <p class="section-label">Request body</p>
+        <table class="field-table">
+            <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th></th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><span class="fname">id_token</span></td>
+                <td><span class="ftype">string</span></td>
+                <td><span class="req">required</span></td>
+                <td><span class="fdesc">The JWT that Google issued. Contains user's email, name, picture, and the sub
+                        (Google's unique user ID). NextAuth extracts this from the Google token response and forwards it
+                        here.</span></td>
+            </tr>
+        </table>
+
+        <p class="section-label">Service logic — step by step</p>
+        <ul class="logic-list">
+            <li>
+                <div class="step-num">1</div>
+                <div>Verify the id_token against Google's public keys using <code>google-auth-library</code> or manual
+                    JWKS fetch. This proves the token was actually issued by Google and hasn't been tampered with. If
+                    verification fails → 401 immediately.</div>
+            </li>
+            <li>
+                <div class="step-num">2</div>
+                <div>Decode the verified payload. Extract: <code>sub</code> (Google's unique user ID — this is your
+                    provider_id), <code>email</code>, <code>name</code>, <code>picture</code> (avatar URL from Google).
+                </div>
+            </li>
+            <li>
+                <div class="step-num">3</div>
+                <div>Query: <code>SELECT * FROM users WHERE provider = 'google' AND provider_id = sub</code>. This is
+                    how you find returning users — by their Google ID, not email (emails can change).</div>
+            </li>
+            <li>
+                <div class="step-num">4a</div>
+                <div>If no row found → new user.
+                    <code>INSERT INTO users (email, provider, provider_id, is_guest=false)</code>. The username column
+                    is left NULL — they haven't picked one yet. The trigger auto-creates user_profiles (with Google name
+                    + picture) and user_stats rows.</div>
+            </li>
+            <li>
+                <div class="step-num">4b</div>
+                <div>If row found → returning user. <code>UPDATE users SET last_seen_at = NOW() WHERE id = ?</code>.
+                    Nothing else changes.</div>
+            </li>
+            <li>
+                <div class="step-num">5</div>
+                <div>Determine <code>is_new_user</code> flag: true if step 4a ran, OR if the found user has
+                    <code>username IS NULL</code> (they started onboarding before but never finished).</div>
+            </li>
+            <li>
+                <div class="step-num">6</div>
+                <div>Generate a refresh token: create a cryptographically random string (32 bytes, hex-encoded). Hash it
+                    with SHA-256.
+                    <code>INSERT INTO refresh_tokens (user_id, token_hash, expires_at = NOW() + 7 days, user_agent)</code>.
+                    Store the raw token in the response, never the hash.</div>
+            </li>
+            <li>
+                <div class="step-num">7</div>
+                <div>Sign an access token JWT with your SECRET_KEY. Payload:
+                    <code>sub = user_id, username, is_guest, exp = NOW() + 15min, iat = NOW()</code>.</div>
+            </li>
+            <li>
+                <div class="step-num">8</div>
+                <div>Set the raw refresh token as an httpOnly, Secure, SameSite=Strict cookie on the response. Max-Age =
+                    7 days in seconds.</div>
+            </li>
+            <li>
+                <div class="step-num">9</div>
+                <div>Return 200 with the access token and the is_new_user flag in the JSON body.</div>
+            </li>
+        </ul>
+
+        <p class="section-label">Response 200</p>
+        <div class="code">{
+            <span class="c-key">"access_token"</span>: <span
+                class="c-str">"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1dWlkIn0.sig"</span>,
+            <span class="c-key">"token_type"</span>: <span class="c-str">"bearer"</span>,
+            <span class="c-key">"expires_in"</span>: <span class="c-num">900</span>,
+            <span class="c-key">"is_new_user"</span>: <span class="c-bool">true</span>
+            }
+            <span class="c-hdr">Set-Cookie</span>: <span class="c-str">refresh_token=rt_abc123...; HttpOnly; Secure;
+                SameSite=Strict; Max-Age=604800; Path=/auth/refresh</span>
+        </div>
+        <p class="section-label">What the frontend does with this</p>
+        <ul class="logic-list">
+            <li>
+                <div class="step-num">→</div>
+                <div>Store <code>access_token</code> in Zustand/React state (memory only — never localStorage)</div>
+            </li>
+            <li>
+                <div class="step-num">→</div>
+                <div>If <code>is_new_user: true</code> → redirect to <code>/onboarding</code></div>
+            </li>
+            <li>
+                <div class="step-num">→</div>
+                <div>If <code>is_new_user: false</code> → redirect to <code>/dashboard</code></div>
+            </li>
+        </ul>
+        <p class="section-label">Error responses</p>
+        <div class="error-row"><span class="ecode">401</span><span class="edesc">id_token failed Google verification —
+                token is fake, expired, or tampered</span></div>
+        <div class="error-row"><span class="ecode">400</span><span class="edesc">id_token field missing from request
+                body</span></div>
+        <div class="error-row"><span class="ecode">500</span><span class="edesc">DB write failed — return generic error,
+                log internally</span></div>
+    </div>
+
+    <!-- POST /auth/refresh -->
+    <div class="panel" id="p-refresh">
+        <div class="method-bar">
+            <span class="method m-post">POST</span>
+            <span class="path">/auth/refresh</span>
+            <span class="auth-pill">cookie required — no JWT</span>
+        </div>
+        <p class="purpose">Issues a new access token silently. Called automatically by the React axios interceptor
+            whenever any API call returns 401. The user never sees this happen. Uses the httpOnly cookie (which
+            JavaScript cannot read — the browser sends it automatically). Validates the refresh token against the
+            database, rotates it (deletes old, inserts new), and returns a fresh access token.</p>
+
+        <p class="section-label">Request headers</p>
+        <table class="field-table">
+            <tr>
+                <th>Header</th>
+                <th>Value</th>
+                <th>Notes</th>
+            </tr>
+            <tr>
+                <td><span class="fname">Cookie</span></td>
+                <td><span class="ftype">refresh_token=rt_abc123...</span></td>
+                <td><span class="fdesc">Sent automatically by the browser. JS never touches this. FastAPI reads it
+                        server-side.</span></td>
+            </tr>
+        </table>
+
+        <p class="section-label">Request body</p>
+        <div class="code"><span class="c-comment">none — the refresh token comes from the cookie only</span></div>
+
+        <p class="section-label">Service logic — step by step</p>
+        <ul class="logic-list">
+            <li>
+                <div class="step-num">1</div>
+                <div>Read the <code>refresh_token</code> value from the incoming cookie. If cookie is missing → 401.
+                </div>
+            </li>
+            <li>
+                <div class="step-num">2</div>
+                <div>Hash the raw token value with SHA-256. Query:
+                    <code>SELECT * FROM refresh_tokens WHERE token_hash = ? AND expires_at > NOW()</code>. If no row
+                    found → 401 (token is expired, revoked, or forged).</div>
+            </li>
+            <li>
+                <div class="step-num">3</div>
+                <div>Get the <code>user_id</code> from the found row. Query:
+                    <code>SELECT id, username, is_guest FROM users WHERE id = user_id AND deleted_at IS NULL</code>. If
+                    user is deleted → 401.</div>
+            </li>
+            <li>
+                <div class="step-num">4</div>
+                <div>Rotate the refresh token: generate a new random token.
+                    <code>DELETE FROM refresh_tokens WHERE id = old_row_id</code>.
+                    <code>INSERT INTO refresh_tokens (user_id, token_hash=hash(new_token), expires_at = NOW() + 7 days)</code>.
+                    These two happen in a single DB transaction.</div>
+            </li>
+            <li>
+                <div class="step-num">5</div>
+                <div>Sign a new access token JWT with the same payload structure:
+                    <code>sub, username, is_guest, exp = NOW() + 15min</code>.</div>
+            </li>
+            <li>
+                <div class="step-num">6</div>
+                <div>Set the new raw refresh token as the httpOnly cookie (replaces the old one). Return the new access
+                    token in the JSON body.</div>
+            </li>
+        </ul>
+
+        <p class="section-label">Response 200</p>
+        <div class="code">{
+            <span class="c-key">"access_token"</span>: <span
+                class="c-str">"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1dWlkIn0.new_sig"</span>,
+            <span class="c-key">"token_type"</span>: <span class="c-str">"bearer"</span>,
+            <span class="c-key">"expires_in"</span>: <span class="c-num">900</span>
+            }
+            <span class="c-hdr">Set-Cookie</span>: <span class="c-str">refresh_token=rt_new_xyz...; HttpOnly; Secure;
+                SameSite=Strict; Max-Age=604800; Path=/auth/refresh</span>
+        </div>
+
+        <p class="section-label">What the frontend does with this</p>
+        <ul class="logic-list">
+            <li>
+                <div class="step-num">→</div>
+                <div>Store the new <code>access_token</code> in memory, replacing the expired one</div>
+            </li>
+            <li>
+                <div class="step-num">→</div>
+                <div>Retry the original request that triggered the 401 — now with the fresh token</div>
+            </li>
+            <li>
+                <div class="step-num">→</div>
+                <div>User sees nothing. The whole cycle is invisible.</div>
+            </li>
+        </ul>
+
+        <p class="section-label">Error responses</p>
+        <div class="error-row"><span class="ecode">401</span><span class="edesc">cookie missing — browser has no
+                session</span></div>
+        <div class="error-row"><span class="ecode">401</span><span class="edesc">token_hash not found in DB — expired,
+                already rotated, or revoked</span></div>
+        <div class="error-row"><span class="ecode">401</span><span class="edesc">user account deleted — clear cookie and
+                redirect to /login</span></div>
+    </div>
+
+    <!-- POST /auth/logout -->
+    <div class="panel" id="p-logout">
+        <div class="method-bar">
+            <span class="method m-post">POST</span>
+            <span class="path">/auth/logout</span>
+            <span class="auth-pill">JWT required</span>
+        </div>
+        <p class="purpose">Logs the user out. Revokes the refresh token in the database so it can never be used again,
+            and clears the httpOnly cookie. The access token is left to expire naturally — at only 15 minutes it's not
+            worth the complexity of blacklisting it. Optionally logs out all devices simultaneously with the all_devices
+            flag.</p>
+
+        <p class="section-label">Request headers</p>
+        <table class="field-table">
+            <tr>
+                <th>Header</th>
+                <th>Value</th>
+                <th>Notes</th>
+            </tr>
+            <tr>
+                <td><span class="fname">Authorization</span></td>
+                <td><span class="ftype">Bearer eyJ...</span></td>
+                <td><span class="fdesc">Valid access token. FastAPI extracts user_id from it.</span></td>
+            </tr>
+            <tr>
+                <td><span class="fname">Cookie</span></td>
+                <td><span class="ftype">refresh_token=rt_abc...</span></td>
+                <td><span class="fdesc">Sent automatically. Used to identify which session to delete.</span></td>
+            </tr>
+        </table>
+
+        <p class="section-label">Request body</p>
+        <table class="field-table">
+            <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th></th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><span class="fname">all_devices</span></td>
+                <td><span class="ftype">boolean</span></td>
+                <td><span class="opt">optional</span></td>
+                <td><span class="fdesc">Default false. If true, deletes ALL refresh token rows for this user — logs them
+                        out of every browser and device simultaneously.</span></td>
+            </tr>
+        </table>
+
+        <p class="section-label">Service logic — step by step</p>
+        <ul class="logic-list">
+            <li>
+                <div class="step-num">1</div>
+                <div>Verify the JWT from the Authorization header. Extract <code>user_id</code>. If invalid → 401.</div>
+            </li>
+            <li>
+                <div class="step-num">2</div>
+                <div>Read the <code>refresh_token</code> cookie value. Hash it.</div>
+            </li>
+            <li>
+                <div class="step-num">3a</div>
+                <div>If <code>all_devices = false</code>:
+                    <code>DELETE FROM refresh_tokens WHERE token_hash = hashed_value</code>. Only this session is
+                    killed.</div>
+            </li>
+            <li>
+                <div class="step-num">3b</div>
+                <div>If <code>all_devices = true</code>:
+                    <code>DELETE FROM refresh_tokens WHERE user_id = user_id</code>. All sessions for this user are
+                    killed.</div>
+            </li>
+            <li>
+                <div class="step-num">4</div>
+                <div>Set-Cookie to clear the cookie:
+                    <code>refresh_token=; Max-Age=0; HttpOnly; Secure; Path=/auth/refresh</code>. This removes the
+                    cookie from the browser.</div>
+            </li>
+            <li>
+                <div class="step-num">5</div>
+                <div>Return 200. The access token in the frontend's memory expires naturally in ≤15 minutes.</div>
+            </li>
+        </ul>
+
+        <p class="section-label">Response 200</p>
+        <div class="code">{
+            <span class="c-key">"message"</span>: <span class="c-str">"logged out"</span>
+            }
+            <span class="c-hdr">Set-Cookie</span>: <span class="c-str">refresh_token=; Max-Age=0; HttpOnly; Secure;
+                Path=/auth/refresh</span>
+        </div>
+
+        <p class="section-label">What the frontend does with this</p>
+        <ul class="logic-list">
+            <li>
+                <div class="step-num">→</div>
+                <div>Clear the <code>access_token</code> from Zustand memory</div>
+            </li>
+            <li>
+                <div class="step-num">→</div>
+                <div>Clear any cached user data from React Query</div>
+            </li>
+            <li>
+                <div class="step-num">→</div>
+                <div>Redirect to <code>/login</code></div>
+            </li>
+        </ul>
+
+        <p class="section-label">Error responses</p>
+        <div class="error-row"><span class="ecode">401</span><span class="edesc">JWT missing or invalid — but still
+                clear the cookie client-side</span></div>
+    </div>
+
+    <!-- GET /auth/me -->
+    <div class="panel" id="p-me">
+        <div class="method-bar">
+            <span class="method m-get">GET</span>
+            <span class="path">/auth/me</span>
+            <span class="auth-pill">JWT required</span>
+        </div>
+        <p class="purpose">Returns the current user's identity from the JWT payload only. Zero database queries —
+            everything comes from decoding the token. Used on app load and to render the nav bar (avatar, username, XP).
+            Because it reads only the token and not the DB, it returns whatever was in the token at the time it was
+            issued — not a live DB read. That is intentional and fine for a 15-minute window.</p>
+
+        <p class="section-label">Request headers</p>
+        <table class="field-table">
+            <tr>
+                <th>Header</th>
+                <th>Value</th>
+                <th>Notes</th>
+            </tr>
+            <tr>
+                <td><span class="fname">Authorization</span></td>
+                <td><span class="ftype">Bearer eyJ...</span></td>
+                <td><span class="fdesc">The access token. FastAPI decodes this — no DB call.</span></td>
+            </tr>
+        </table>
+
+        <p class="section-label">Request body</p>
+        <div class="code"><span class="c-comment">none</span></div>
+
+        <p class="section-label">Service logic — step by step</p>
+        <ul class="logic-list">
+            <li>
+                <div class="step-num">1</div>
+                <div>FastAPI's <code>get_current_user()</code> dependency runs. It decodes the JWT using the SECRET_KEY
+                    and verifies the signature and expiry. If invalid → 401.</div>
+            </li>
+            <li>
+                <div class="step-num">2</div>
+                <div>Extract fields from the decoded payload: <code>sub</code> (user_id), <code>username</code>,
+                    <code>is_guest</code>, <code>exp</code>.</div>
+            </li>
+            <li>
+                <div class="step-num">3</div>
+                <div>Return them directly. No SELECT query. This is intentionally lightweight.</div>
+            </li>
+        </ul>
+
+        <p class="section-label">Response 200</p>
+        <div class="code">{
+            <span class="c-key">"user_id"</span>: <span class="c-str">"550e8400-e29b-41d4-a716-446655440000"</span>,
+            <span class="c-key">"username"</span>: <span class="c-str">"naveen_k"</span>,
+            <span class="c-key">"is_guest"</span>: <span class="c-bool">false</span>,
+            <span class="c-key">"token_expires_at"</span>: <span class="c-str">"2026-05-21T16:15:00Z"</span>
+            }
+        </div>
+
+        <p class="section-label">What the frontend does with this</p>
+        <ul class="logic-list">
+            <li>
+                <div class="step-num">→</div>
+                <div>Called once on app mount to check if a session exists</div>
+            </li>
+            <li>
+                <div class="step-num">→</div>
+                <div>If 401 → try <code>POST /auth/refresh</code> first before redirecting to login</div>
+            </li>
+            <li>
+                <div class="step-num">→</div>
+                <div>Username and user_id stored in Zustand alongside the access token</div>
+            </li>
+        </ul>
+
+        <p class="section-label">Error responses</p>
+        <div class="error-row"><span class="ecode">401</span><span class="edesc">no token, expired token, or invalid
+                signature</span></div>
+    </div>
+
+    <!-- GET /users/me/username-check -->
+    <div class="panel" id="p-check">
+        <div class="method-bar">
+            <span class="method m-get">GET</span>
+            <span class="path">/users/me/username-check</span>
+            <span class="auth-pill">JWT required</span>
+        </div>
+        <p class="purpose">Live availability check for a username. Called on every keystroke (debounced 300ms) on the
+            onboarding screen as the user types. Validates the format first — if the format is wrong, return the error
+            immediately without hitting the DB. Only queries the DB if the format is valid. Extremely fast — single
+            indexed lookup on users.username.</p>
+
+        <p class="section-label">Request headers</p>
+        <table class="field-table">
+            <tr>
+                <th>Header</th>
+                <th>Value</th>
+                <th>Notes</th>
+            </tr>
+            <tr>
+                <td><span class="fname">Authorization</span></td>
+                <td><span class="ftype">Bearer eyJ...</span></td>
+                <td><span class="fdesc">Must be authenticated — guests can't pick usernames, and the check is
+                        user-specific.</span></td>
+            </tr>
+        </table>
+
+        <p class="section-label">Query parameters</p>
+        <table class="field-table">
+            <tr>
+                <th>Param</th>
+                <th>Type</th>
+                <th></th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><span class="fname">username</span></td>
+                <td><span class="ftype">string</span></td>
+                <td><span class="req">required</span></td>
+                <td><span class="fdesc">The username to check. Passed as a query string:
+                        <code>/users/me/username-check?username=naveen_k</code></span></td>
+            </tr>
+        </table>
+
+        <p class="section-label">Service logic — step by step</p>
+        <ul class="logic-list">
+            <li>
+                <div class="step-num">1</div>
+                <div>Verify JWT — extract user_id (needed to exclude their own username from the collision check).</div>
+            </li>
+            <li>
+                <div class="step-num">2</div>
+                <div>Validate format with a regex before hitting the DB: <code>^[a-zA-Z0-9_]{3,20}$</code>. Must be 3–20
+                    characters, alphanumeric plus underscore only. No spaces, no hyphens, no dots. If invalid → 400 with
+                    a specific message.</div>
+            </li>
+            <li>
+                <div class="step-num">3</div>
+                <div><code>SELECT id FROM users WHERE username = lower(input) AND id != current_user_id</code>. The
+                    <code>id != current_user_id</code> exclusion handles the case where the user is re-checking their
+                    own existing username.</div>
+            </li>
+            <li>
+                <div class="step-num">4</div>
+                <div>If row found → <code>available: false</code>. If no row → <code>available: true</code>.</div>
+            </li>
+        </ul>
+
+        <p class="section-label">Response 200</p>
+        <div class="code">{
+            <span class="c-key">"username"</span>: <span class="c-str">"naveen_k"</span>,
+            <span class="c-key">"available"</span>: <span class="c-bool">true</span>
+            }
+
+            <span class="c-comment">or</span>
+
+            {
+            <span class="c-key">"username"</span>: <span class="c-str">"naveen_k"</span>,
+            <span class="c-key">"available"</span>: <span class="c-bool">false</span>,
+            <span class="c-key">"reason"</span>: <span class="c-str">"already taken"</span>
+            }
+        </div>
+
+        <p class="section-label">What the frontend does with this</p>
+        <ul class="logic-list">
+            <li>
+                <div class="step-num">→</div>
+                <div>Show a green checkmark or red cross next to the input field in real time</div>
+            </li>
+            <li>
+                <div class="step-num">→</div>
+                <div>Disable the submit button if <code>available: false</code> or if format validation failed</div>
+            </li>
+        </ul>
+
+        <p class="section-label">Error responses</p>
+        <div class="error-row"><span class="ecode">400</span><span class="edesc">username param missing from query
+                string</span></div>
+        <div class="error-row"><span class="ecode">400</span><span class="edesc">format invalid — returns specific
+                message: "3–20 chars, letters, numbers, underscore only"</span></div>
+        <div class="error-row"><span class="ecode">401</span><span class="edesc">JWT missing or invalid</span></div>
+    </div>
+
+    <!-- POST /users/me/username -->
+    <div class="panel" id="p-username">
+        <div class="method-bar">
+            <span class="method m-post">POST</span>
+            <span class="path">/users/me/username</span>
+            <span class="auth-pill">JWT required</span>
+        </div>
+        <p class="purpose">Sets the username for a newly created account. Called exactly once — when the user submits
+            the onboarding form. After this, the user has a complete account. Re-validates availability at write time
+            (the username could have been taken between the last check and submission). Also updates
+            user_profiles.display_name to match if it was null or still set to the raw Google name. This endpoint is
+            idempotent if the same username is submitted twice by the same user.</p>
+
+        <p class="section-label">Request headers</p>
+        <table class="field-table">
+            <tr>
+                <th>Header</th>
+                <th>Value</th>
+                <th>Notes</th>
+            </tr>
+            <tr>
+                <td><span class="fname">Authorization</span></td>
+                <td><span class="ftype">Bearer eyJ...</span></td>
+                <td><span class="fdesc">The user's access token. user_id extracted from here.</span></td>
+            </tr>
+            <tr>
+                <td><span class="fname">Content-Type</span></td>
+                <td><span class="ftype">application/json</span></td>
+                <td><span class="fdesc">Required for POST with JSON body.</span></td>
+            </tr>
+        </table>
+
+        <p class="section-label">Request body</p>
+        <table class="field-table">
+            <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th></th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><span class="fname">username</span></td>
+                <td><span class="ftype">string</span></td>
+                <td><span class="req">required</span></td>
+                <td><span class="fdesc">The chosen username. Same format rules: 3–20 chars, alphanumeric + underscore.
+                        Stored lowercased.</span></td>
+            </tr>
+        </table>
+
+        <p class="section-label">Service logic — step by step</p>
+        <ul class="logic-list">
+            <li>
+                <div class="step-num">1</div>
+                <div>Verify JWT. Extract <code>user_id</code>.</div>
+            </li>
+            <li>
+                <div class="step-num">2</div>
+                <div>Check if this user already has a username:
+                    <code>SELECT username FROM users WHERE id = user_id</code>. If <code>username IS NOT NULL</code> →
+                    409 with message "username already set — use PATCH /users/me/profile to change it".</div>
+            </li>
+            <li>
+                <div class="step-num">3</div>
+                <div>Validate format again server-side: <code>^[a-zA-Z0-9_]{3,20}$</code>. Never trust client-side
+                    validation alone.</div>
+            </li>
+            <li>
+                <div class="step-num">4</div>
+                <div>Check availability one final time:
+                    <code>SELECT id FROM users WHERE username = lower(input) AND id != user_id</code>. If taken → 409
+                    "username already taken". This is a race condition guard — the check endpoint is not transactional.
+                </div>
+            </li>
+            <li>
+                <div class="step-num">5</div>
+                <div><code>UPDATE users SET username = lower(input) WHERE id = user_id</code>.</div>
+            </li>
+            <li>
+                <div class="step-num">6</div>
+                <div>If <code>user_profiles.display_name</code> is still the raw Google name (first login default),
+                    update it to match the chosen username:
+                    <code>UPDATE user_profiles SET display_name = input WHERE user_id = user_id</code>. The user can
+                    change display_name separately later.</div>
+            </li>
+            <li>
+                <div class="step-num">7</div>
+                <div>Issue a new access token with <code>username</code> now populated in the payload (the original
+                    token had username = null). Sign it and return it so the frontend's in-memory token is immediately
+                    up to date.</div>
+            </li>
+        </ul>
+
+        <p class="section-label">Response 200</p>
+        <div class="code">{
+            <span class="c-key">"message"</span>: <span class="c-str">"username set"</span>,
+            <span class="c-key">"username"</span>: <span class="c-str">"naveen_k"</span>,
+            <span class="c-key">"access_token"</span>: <span
+                class="c-str">"eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Im5hdmVlbl9rIn0.sig"</span>
+            }
+        </div>
+
+        <p class="section-label">What the frontend does with this</p>
+        <ul class="logic-list">
+            <li>
+                <div class="step-num">→</div>
+                <div>Replace the old access_token in Zustand with the new one (it now has username in it)</div>
+            </li>
+            <li>
+                <div class="step-num">→</div>
+                <div>Redirect to <code>/dashboard</code> — onboarding is complete</div>
+            </li>
+        </ul>
+
+        <p class="section-label">Error responses</p>
+        <div class="error-row"><span class="ecode">400</span><span class="edesc">username missing from body</span></div>
+        <div class="error-row"><span class="ecode">400</span><span class="edesc">format invalid — specific message
+                returned</span></div>
+        <div class="error-row"><span class="ecode">401</span><span class="edesc">JWT missing or invalid</span></div>
+        <div class="error-row"><span class="ecode">409</span><span class="edesc">username already taken — race condition
+                between check and submit</span></div>
+        <div class="error-row"><span class="ecode">409</span><span class="edesc">this user already has a username
+                set</span></div>
+    </div>
+
+</div>
+<script>
+    function sw(id, btn) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('p-' + id).classList.add('active');
+        btn.classList.add('active');
+    }
+</script>
