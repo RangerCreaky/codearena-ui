@@ -19,7 +19,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/",
   },
   callbacks: {
-    async jwt({ token, account, user }) {
+    async jwt({ token, account, user, trigger, session }) {
+      if (trigger === "update" && session) {
+        if (session.accessToken) token.accessToken = session.accessToken;
+        if (session.username !== undefined) token.username = session.username;
+        if (session.displayName !== undefined) token.displayName = session.displayName;
+        if (session.avatarUrl !== undefined) token.avatarUrl = session.avatarUrl;
+        if (session.isGuest !== undefined) token.isGuest = session.isGuest;
+      }
+
       // On initial sign-in, forward the Google id_token to our FastAPI backend
       if (account && account.id_token) {
         try {

@@ -7,6 +7,7 @@ import { AuthProvider } from "@/components/providers/auth-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SpiderNoirModal } from "@/components/ui/spider-noir-modal";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-sans",
@@ -49,6 +50,7 @@ export default function RootLayout({
                 <TooltipProvider>
                   <SpiderNoirModal />
                   {children}
+                  <Toaster position="bottom-right" theme="dark" />
                 </TooltipProvider>
               </ThemeProvider>
             </QueryProvider>

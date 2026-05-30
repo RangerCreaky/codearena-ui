@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -51,6 +51,11 @@ const LANGUAGES = [
 ];
 
 const profileSchema = z.object({
+  username: z
+    .string()
+    .min(3, "Username must be at least 3 characters")
+    .max(20, "Username must be at most 20 characters")
+    .regex(/^[a-zA-Z0-9_]+$/, "Only alphanumeric characters and underscores allowed"),
   displayName: z.string().min(1, "Display name is required"),
   bio: z.string().max(500),
   country: z.string(),
@@ -65,20 +70,26 @@ const sidebarLinks = [
   { label: "Account", href: "#", icon: Settings, active: false },
 ];
 
+import { fetchWithAuth } from "@/lib/api/fetchWithAuth";
+import { toast } from "sonner";
+
 export default function ProfileEditPage() {
-  const { data: session } = useSession();
+  const { data: session, status, update: updateSession } = useSession();
   const [isSaving, setIsSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [profileLoaded, setProfileLoaded] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors },
   } = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
+      username: session?.username || "",
       displayName: session?.displayName || session?.user?.name || "",
       bio: "",
       country: "",
@@ -89,14 +100,70 @@ export default function ProfileEditPage() {
 
   const bio = watch("bio") || "";
 
+  useEffect(() => {
+    if (status !== "authenticated" || profileLoaded) return;
+
+    async function loadProfile() {
+      try {
+        const res = await fetchWithAuth("/api/backend/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          // Assuming backend returns snake_case fields as per the POST contract
+          reset({
+            username: data.username || session?.username || "",
+            displayName: data.display_name || session?.displayName || session?.user?.name || "",
+            bio: data.bio || "",
+            country: data.country || "",
+            preferredLanguage: data.preferred_language || "python",
+            githubUrl: data.github_url || "",
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load existing profile:", err);
+      } finally {
+        setProfileLoaded(true);
+      }
+    }
+    loadProfile();
+  }, [reset, session, status, profileLoaded]);
+
   async function onSubmit(data: ProfileForm) {
     setIsSaving(true);
-    // Profile update API doesn't exist yet — simulate save
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    console.log("Profile data:", data);
-    setIsSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    setErrorMsg(null);
+
+    try {
+      const res = await fetchWithAuth(`/api/backend/users/me/username`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: data.username,
+          display_name: data.displayName,
+          avatar_url: session?.avatarUrl || session?.user?.image || "",
+          bio: data.bio || null,
+          country: data.country || null,
+          preferred_language: data.preferredLanguage,
+          github_url: data.githubUrl || null,
+        }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.detail || errData?.message || "Failed to update profile");
+      }
+
+      toast.success("Profile saved successfully!", {
+        description: "Your changes are now live across CodeArena.",
+      });
+      // Force update of frontend session with new data
+      await updateSession();
+    } catch (err: any) {
+      toast.error("Failed to save profile", {
+        description: err.message || "An unexpected error occurred",
+      });
+      setErrorMsg(err.message || "An unexpected error occurred");
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (
@@ -111,7 +178,7 @@ export default function ProfileEditPage() {
         >
           <Card className="border-border/50">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm">Settings</CardTitle>
+              <CardTitle className="text-xs">Settings</CardTitle>
             </CardHeader>
             <CardContent className="p-2">
               <nav className="space-y-1">
@@ -119,7 +186,7 @@ export default function ProfileEditPage() {
                   <Link
                     key={link.label}
                     href={link.href}
-                    className={`flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors ${
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-md text-xs transition-colors ${
                       link.active
                         ? "bg-primary/10 text-primary font-medium"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -166,6 +233,20 @@ export default function ProfileEditPage() {
                   </div>
                 </div>
 
+                {/* Username */}
+                <div className="space-y-2">
+                  <Label htmlFor="username">Username</Label>
+                  <Input
+                    id="username"
+                    {...register("username")}
+                  />
+                  {errors.username && (
+                    <p className="text-xs text-destructive">
+                      {errors.username.message}
+                    </p>
+                  )}
+                </div>
+
                 {/* Display Name */}
                 <div className="space-y-2">
                   <Label htmlFor="displayName">Display Name</Label>
@@ -187,7 +268,7 @@ export default function ProfileEditPage() {
                     id="bio"
                     placeholder="Tell the arena about yourself..."
                     className="resize-none"
-                    rows={4}
+                    rows={5}
                     {...register("bio")}
                   />
                   <p className="text-xs text-muted-foreground text-right">
@@ -257,17 +338,8 @@ export default function ProfileEditPage() {
                     ) : (
                       <Save className="h-4 w-4 mr-2" />
                     )}
-                    Save Changes
+                    {isSaving ? "Saving..." : "Save Changes"}
                   </Button>
-                  {saved && (
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-sm text-green-500"
-                    >
-                      ✓ Profile saved
-                    </motion.p>
-                  )}
                 </div>
               </form>
             </CardContent>
