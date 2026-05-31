@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { motion } from "motion/react";
 import Link from "next/link";
-import { User, Settings, Terminal } from "lucide-react";
+import { Terminal, Gamepad2, Server } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 const TERMINAL_LINES = [
@@ -70,16 +70,16 @@ function DashboardTerminal() {
 
 const quickActions = [
   {
-    title: "View Profile",
-    description: "See your arena identity",
-    href: "/profile",
-    icon: User,
+    title: "Enter Arena",
+    description: "Find a match and challenge opponents",
+    href: "/play",
+    icon: Gamepad2,
   },
   {
-    title: "Edit Profile",
-    description: "Update your details",
-    href: "/profile/edit",
-    icon: Settings,
+    title: "Create Room",
+    description: "Host a private battle for your friends",
+    href: "/host",
+    icon: Server,
   },
 ];
 
