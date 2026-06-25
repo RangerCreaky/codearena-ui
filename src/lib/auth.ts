@@ -74,7 +74,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                   httpOnly: true,
                   secure: process.env.NODE_ENV === "production",
                   sameSite: "strict",
-                  path: "/auth/refresh",
+                  path: "/api/auth",
                 };
                 
                 // Extract Max-Age if present
@@ -106,9 +106,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      if (token.accessToken) session.accessToken = token.accessToken as string;
+      if (token.accessToken) {
+        session.accessToken = token.accessToken as string;
+        // Decode the JWT to ensure session.user.id matches the backend's UUID
+        try {
+          const base64Url = session.accessToken.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = Buffer.from(base64, 'base64').toString('utf8');
+          const parsed = JSON.parse(jsonPayload);
+          if (parsed.sub) {
+            session.userId = parsed.sub;
+            session.user.id = parsed.sub;
+          }
+        } catch (e) {}
+      }
       if (token.isNewUser !== undefined) session.isNewUser = token.isNewUser as boolean;
-      if (token.userId) session.userId = token.userId as string;
+      if (!session.userId && token.userId) {
+        session.userId = token.userId as string;
+        session.user.id = token.userId as string;
+      }
       if (token.username !== undefined) session.username = token.username as string | null;
       if (token.displayName !== undefined) session.displayName = token.displayName as string | null;
       if (token.avatarUrl !== undefined) session.avatarUrl = token.avatarUrl as string | null;

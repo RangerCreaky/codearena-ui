@@ -40,7 +40,7 @@ export async function POST() {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        path: "/auth/refresh", // Must match whatever the backend expects/sets
+        path: "/api/auth",
       };
       
       const maxAgePart = options.find(opt => opt.toLowerCase().startsWith("max-age="));

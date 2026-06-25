@@ -14,7 +14,7 @@ export default function DashboardLayout({
       <div className="fixed inset-0 z-[-1] pointer-events-none opacity-30 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]">
         <MatrixRain />
       </div>
-      <main className="pt-20 min-h-screen relative">{children}</main>
+      <main className="pt-16 min-h-screen relative">{children}</main>
     </>
   );
 }

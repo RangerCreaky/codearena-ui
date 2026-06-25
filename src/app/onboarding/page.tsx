@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuthStore } from "@/stores/auth-store";
+import { fetchWithAuth } from "@/lib/api/fetchWithAuth";
 
 const COUNTRIES = [
   { code: "US", name: "United States" },
@@ -114,13 +115,10 @@ export default function OnboardingPage() {
       setUsernameStatus("checking");
 
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/users/me/username-check?username=${encodeURIComponent(value)}`,
-          {
-            headers: {
-              Authorization: `Bearer ${session?.accessToken || ""}`,
-            },
-          }
+        const res = await fetchWithAuth(
+          `/api/backend/users/me/username-check?username=${encodeURIComponent(value)}`,
+          {},
+          session
         );
 
         if (res.ok) {
@@ -146,16 +144,16 @@ export default function OnboardingPage() {
   async function onSubmit(data: OnboardingForm) {
     setIsSubmitting(true);
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/me/username`,
+      const res = await fetchWithAuth(
+        `/api/backend/users/me/username`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.accessToken || ""}`,
           },
           body: JSON.stringify({ username: data.username }),
-        }
+        },
+        session
       );
 
       if (res.ok) {
